@@ -10,7 +10,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory("/iems5718-YE_Caifa-1155225555-Frontend/"),
   routes,
 });
 
