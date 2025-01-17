@@ -112,10 +112,11 @@
   gap: 20px;
   padding: 0;
   margin: 0 auto;
-  list-style: none; 
+  list-style: none;
 }
 
 .product-card {
+  max-width: 300px;
   border: 1px solid #85C1E9;
   border-radius: 5px;
   padding: 10px;
