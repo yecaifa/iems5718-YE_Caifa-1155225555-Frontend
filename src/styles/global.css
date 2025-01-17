@@ -1,0 +1,79 @@
+/* global.css */
+
+/* Header 样式 */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #5DADE2; /* 浅蓝色 */
+    color: white;
+    padding: 10px 20px;
+  }
+  
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .search-bar {
+    flex: 1;
+    margin: 0 20px;
+  }
+  
+  .user-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .header-categories {
+    background-color: #85C1E9; /* 更浅的蓝色 */
+    color: white;
+  }
+  
+  .header-categories .el-menu-item:hover {
+    background-color: #3498DB; /* 深蓝色 */
+  }
+  
+  .header-subcategories {
+    background-color: #85C1E9; /* 更浅的蓝色 */
+    color: white;
+  }
+  
+  .header-subcategories .el-menu-item:hover {
+    background-color: #3498DB; /* 深蓝色 */
+  }
+  
+  .home-link {
+    cursor: pointer;
+    color: white;
+  }
+  
+  .home-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* 按钮样式 */
+  .custom-button {
+    background-color: #5DADE2; /* 按钮浅蓝色背景 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .custom-button:hover {
+    background-color: #3498DB; /* 按钮深蓝色悬停 */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .custom-button:active {
+    background-color: #21618C; /* 按钮更深蓝色点击 */
+  }
+  
+  .custom-button:focus {
+    outline: none;
+    box-shadow: 0px 0px 8px #5DADE2; /* 浅蓝色光圈 */
+  }
