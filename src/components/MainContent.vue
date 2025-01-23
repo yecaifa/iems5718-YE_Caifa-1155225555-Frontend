@@ -8,7 +8,7 @@
                 <h3>{{ product.name }}</h3>
             </router-link>
           <p>${{ product.price }}</p>
-          <el-button type="primary">Add to Cart</el-button>
+          <el-button type="primary" @click="addToCart(product)">Add to Cart</el-button>
         </li>
       </ul>
   
@@ -25,15 +25,6 @@
     data() {
         return {
             products: [
-            {
-                id: 1,
-                name: "iPhone 15",
-                price: 999,
-                category: "Electronics",
-                subcategory: "Phones",
-                description: "Apple's latest smartphone with A16 chip.",
-                image: "https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/iphone-15-model-unselect-gallery-1-202309?wid=5120&hei=2880&fmt=webp&qlt=70&.v=aVFiZEF4WDEvUWJNSU5HRDg4cklnTGdzSmpObkZCM3MrNmJ5SkhESlNDZ1UwRE05YU1MZ0lYWk55ZU5FOENXWkpFd0xhWDVibStLdGRYRmxkNGI4VTdpMGJRT0ppMjh4RlRZQkc0Q3FZZEI4UW55RWdXT3BFc2NrR2VEb1pCOGo&traceId=1",
-            },
             {
                 id: 2,
                 name: "Samsung Galaxy S23",
@@ -102,6 +93,17 @@
         );
       },
     },
+    methods: {
+      addToCart(product) {
+        this.$store.dispatch('addToCart', product);  // 通过 Vuex 的 action 添加商品到购物车
+        this.$notify({
+          title: `${product.name} added to cart!`,
+          message: `You have added ${product.name} to your shopping cart.`,
+          type: 'success',
+          duration: 3000, // 持续显示3秒
+        });
+      }
+    }
   };
   </script>
   

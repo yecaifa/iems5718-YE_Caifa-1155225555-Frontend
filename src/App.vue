@@ -13,8 +13,6 @@
 
     <!-- ✅ `router-view` 负责显示 `ProductPage.vue` 或其他页面 -->
     <router-view />
-    
-    <Footer />
   </div>
 </template>
 

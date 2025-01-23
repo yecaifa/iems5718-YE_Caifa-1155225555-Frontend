@@ -1,12 +1,13 @@
 <template>
     <main v-if="product">
         <div class="product-container">
+            <!-- 图片部分，独占一行 -->
             <div class="product-image">
                 <img :src="product.image" :alt="product.name" />
             </div>
+            <!-- 产品信息部分 -->
             <div class="product-info">
                 <h1>{{ product.name }}</h1>
-                <p class="category">Category: {{ mainCategory }} > {{ subCategory }}</p>
                 <p class="description">{{ product.description }}</p>
                 <p class="price">${{ product.price }}</p>
                 <el-button type="primary" @click="addToCart(product)">Add to Cart</el-button>
@@ -125,7 +126,13 @@ export default {
     },
     methods: {
         addToCart(product) {
-            alert(`${product.name} added to cart!`);
+            this.$store.dispatch('addToCart', product);  // 通过 Vuex 的 action 添加商品到购物车
+        this.$notify({
+          title: `${product.name} added to cart!`,
+          message: `You have added ${product.name} to your shopping cart.`,
+          type: 'success',
+          duration: 3000, // 持续显示3秒
+        });
         },
     },
 };
@@ -134,19 +141,23 @@ export default {
 <style scoped>
 .product-container {
     display: flex;
-    align-items: center;
-    gap: 20px;
+    flex-direction: column; /* 图片和产品信息垂直排列 */
+    align-items: center; 
+    gap: 30px;
     padding: 20px;
 }
 
 .product-image img {
-    width: 300px;
+    width: 100%; /* 图片占满父容器的宽度 */
+    max-width: 1000px;  /* 最大宽度设置为600px */
     height: auto;
     border-radius: 10px;
+    object-fit: contain; /* 保持图片的比例 */
 }
 
 .product-info {
-    max-width: 500px;
+    text-align: center; /* 产品信息居中 */
+    max-width: 600px;
 }
 
 .category {

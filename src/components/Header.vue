@@ -1,36 +1,49 @@
 <template>
-    <header class="header">
-      <div class="header-top">
-        <h1 @click="goHome" class="home-link">Home</h1>
-        <div class="search-bar">
-          <el-input
-            v-model="searchQuery"
-            placeholder="Search products..."
-            clearable
-          >
-            <template #append>
-              <el-button icon="el-icon-search" class="custom-button">Search</el-button>
-            </template>
-          </el-input>
+  <header class="header">
+    <div class="header-top">
+      <h1 @click="goHome" class="home-link">Home</h1>
+      
+    </div>
+    <div class="user-actions">
+      <el-button
+        ref="shoppingListButton"  
+        type="text"
+        class="custom-button"
+        @mouseover="showShoppingList = true"
+      >
+        Shopping List   ${{ total }}
+      </el-button>
+
+      <div
+        v-if="showShoppingList"
+        class="shopping-list-hover"
+        :style="shoppingListPosition"
+        @mouseover="showShoppingList = true"
+        @mouseleave="showShoppingList = false"
+      >
+        <h3>Shopping List (Total: ${{ total }})</h3>
+        <div v-for="(item, index) in cart" :key="index" class="shopping-item">
+          <span>{{ item.name }} ({{ item.quantity }})</span>
+          <input type="number" v-model.number="item.quantity" min="1" class="quantity-input" />
+          <span>@{{ item.price * item.quantity }}</span>
         </div>
-        <div class="user-actions">
-          <el-button type="text" icon="el-icon-shopping-cart" class="custom-button">Cart</el-button>
-          <el-button type="text" icon="el-icon-user" class="custom-button">Account</el-button>
+        <div class="checkout">
+          <button @click="checkout" class="checkout-btn">Checkout</button>
         </div>
       </div>
-  
-      <!-- 大类菜单 -->
-      <div class="header-categories">
-        <el-menu mode="horizontal" :default-active="activeCategory">
-          <el-menu-item
-            v-for="category in categories"
-            :key="category.name"
-            @click="selectCategory(category)"
-          >
-            {{ category.name }}
-          </el-menu-item>
-        </el-menu>
-      </div>
+    </div>
+    <!-- 分类菜单 -->
+    <div class="header-categories">
+      <el-menu mode="horizontal" :default-active="activeCategory">
+        <el-menu-item
+          v-for="category in categories"
+          :key="category.name"
+          @click="selectCategory(category)"
+        >
+          {{ category.name }}
+        </el-menu-item>
+      </el-menu>
+    </div>
   
       <!-- 子类菜单 -->
       <div class="header-subcategories" v-if="activeCategory">
@@ -44,41 +57,42 @@
           </el-menu-item>
         </el-menu>
       </div>
-    </header>
-  </template>
-  
-  <script>
-  export default {
-    props: {
+  </header>
+</template>
+
+<script>
+export default {
+  props: {
       onCategoryChange: Function,
       onSubcategoryChange: Function,
       onHomeClick: Function,
+  },
+  computed: {
+    cart() {
+      return this.$store.state.cart; // 从 Vuex 获取购物车数据
     },
-    data() {
-      return {
-        searchQuery: "",
-        activeCategory: null,
-        activeSubcategory: "",
-        categories: [
-          {
-            name: "Electronics",
-            subcategories: ["Phones", "Laptops", "Cameras"],
-          },
-          {
-            name: "Clothes",
-            subcategories: ["Men", "Women", "Kids"],
-          },
-          {
-            name: "Groceries",
-            subcategories: ["Fruits", "Vegetables", "Snacks"],
-          },
-        ],
-      };
-    },
-    methods: {
-        selectCategory(category) {
-            this.activeCategory = category;
-            this.activeSubcategory = "";
+    total() {
+      return this.$store.getters.cartTotal; // 从 Vuex 获取购物车总价
+    }
+  },
+  data() {
+    return {
+      searchQuery: "",
+      activeCategory: null,
+      activeSubcategory: "",
+      categories: [
+        { name: "Electronics", subcategories: ["Phones", "Laptops", "Cameras"] },
+        { name: "Clothes", subcategories: ["Men", "Women", "Kids"] },
+        { name: "Groceries", subcategories: ["Fruits", "Vegetables", "Snacks"] },
+      ],
+      showShoppingList: false, // 控制悬浮框的显示与隐藏
+      shoppingListPosition: { top: "30px", left: "0px" }, // 悬浮框的位置
+    };
+  },
+  methods: {
+    selectCategory(category) {
+      this.activeCategory = category;
+      this.activeSubcategory = "";
             this.$router.push(`/category/${category.name}`); // ✅ 更新 URL
             this.onCategoryChange(category.name); // ✅ 通知父组件
         },
@@ -86,17 +100,57 @@
             this.activeSubcategory = subcategory;
             this.$router.push(`/category/${this.activeCategory.name}/${subcategory}`); // ✅ 更新 URL
             this.onSubcategoryChange(subcategory); // ✅ 通知父组件
-        },
-        goHome() {
-            this.activeCategory = null;
-            this.activeSubcategory = "";
-            this.$router.push("/"); // ✅ 更新 URL
-            this.onHomeClick(); // ✅ 通知父组件
-        },
     },
-  };
-  </script>
-  
-  <style>
-  
-  </style>
+    goHome() {
+      this.activeCategory = null;
+      this.activeSubcategory = "";
+      this.$router.push("/");
+      this.onHomeClick();
+    },
+    toggleCartVisibility() {
+      this.showShoppingList = !this.showShoppingList; // 切换购物清单显示
+      if (this.showShoppingList) {
+        this.calculateShoppingListPosition(); // 计算并设置悬浮框的位置
+      }
+    },
+    // 计算悬浮框的位置（紧挨按钮左侧）
+    calculateShoppingListPosition() {
+      const button = this.$refs.shoppingListButton; // 获取按钮 DOM 元素
+      const rect = button.getBoundingClientRect(); // 获取按钮的位置信息
+
+      // 设置悬浮框的位置，放置在按钮的左边
+      this.shoppingListPosition = {
+        top: `${rect.top + window.scrollY + button.offsetHeight + 10}px`, // 设置悬浮框顶部
+        left: `${rect.left + window.scrollX - 210}px`, // 设置悬浮框左侧，确保悬浮框紧挨按钮左侧，宽度可以调整
+      };
+    },
+  },
+};
+</script>
+
+<style>
+.shopping-list-button {
+  background-color: #0c1b25; /* 鲜明的蓝色背景 */
+  color: white; /* 白色文字 */
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.shopping-list-hover {
+  position: absolute;
+  padding: 10px;
+  background-color: #06647a;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 500px; /* 控制悬浮框的宽度 */
+  cursor: pointer;
+}
+
+.search-bar {
+  max-width: 400px;
+  width: 50%;
+}
+</style>
