@@ -5,7 +5,7 @@
     position: sticky;
     top: 0;
     z-index: 1000;
-    background-color: #5DADE2; /* 浅蓝色 */
+    background-color: #5DADE2; 
     color: white;
     padding: 10px 20px;
   }
@@ -27,21 +27,21 @@
   }
   
   .header-categories {
-    background-color: #85C1E9; /* 更浅的蓝色 */
+    background-color: #85C1E9; 
     color: white;
   }
   
   .header-categories .el-menu-item:hover {
-    background-color: #3498DB; /* 深蓝色 */
+    background-color: #3498DB; 
   }
   
   .header-subcategories {
-    background-color: #85C1E9; /* 更浅的蓝色 */
+    background-color: #85C1E9; 
     color: white;
   }
   
   .header-subcategories .el-menu-item:hover {
-    background-color: #3498DB; /* 深蓝色 */
+    background-color: #3498DB; 
   }
   
   .home-link {
@@ -55,7 +55,7 @@
   
   /* 按钮样式 */
   .custom-button {
-    background-color: #5DADE2; /* 按钮浅蓝色背景 */
+    background-color: #5DADE2; 
     color: white;
     border: none;
     border-radius: 4px;
@@ -65,17 +65,17 @@
   }
   
   .custom-button:hover {
-    background-color: #3498DB; /* 按钮深蓝色悬停 */
+    background-color: #3498DB; 
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   }
   
   .custom-button:active {
-    background-color: #21618C; /* 按钮更深蓝色点击 */
+    background-color: #21618C; 
   }
   
   .custom-button:focus {
     outline: none;
-    box-shadow: 0px 0px 8px #5DADE2; /* 浅蓝色光圈 */
+    box-shadow: 0px 0px 8px #5DADE2; 
   }
   .shopping-list-container {
     position: absolute;
@@ -101,24 +101,24 @@
   
   .item-details {
     display: flex;
-    justify-content: flex-start; /* 左对齐 */
+    justify-content: flex-start; 
     width: 100%;
-    align-items: center; /* 垂直居中 */
+    align-items: center; 
   }
   
   .item-name {
-    flex: 3; /* 商品名称占用较多的空间 */
+    flex: 3; 
     text-align: left;
   }
   
   .item-quantity {
     flex: 1;
-    text-align: center; /* 数量居中 */
+    text-align: center; 
   }
   
   .item-price {
     flex: 1;
-    text-align: right; /* 价格右对齐 */
+    text-align: right; 
   }
   
   .checkout-btn {

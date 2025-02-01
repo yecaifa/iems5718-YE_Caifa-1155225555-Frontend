@@ -11,7 +11,7 @@
       :activeSubcategory="activeSubcategory"
     />
 
-    <!-- ✅ `router-view` 负责显示 `ProductPage.vue` 或其他页面 -->
+    <!-- `router-view` 负责显示 `ProductPage.vue` 或其他页面 -->
     <router-view />
   </div>
 </template>
@@ -48,10 +48,10 @@ export default {
 </script>
 
 <style>
-/* 设置全局容器背景色 */
+
 .app-container {
-  background-color: #f9f9f9; /* 浅灰色 */
-  color: #333; /* 深色文本，适合浅色背景 */
+  background-color: #f9f9f9; 
+  color: #333; 
   min-height: 100vh;
   padding: 20px;
 }

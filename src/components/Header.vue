@@ -93,13 +93,13 @@ export default {
     selectCategory(category) {
       this.activeCategory = category;
       this.activeSubcategory = "";
-            this.$router.push(`/category/${category.name}`); // ✅ 更新 URL
-            this.onCategoryChange(category.name); // ✅ 通知父组件
+            this.$router.push(`/category/${category.name}`); // 更新 URL
+            this.onCategoryChange(category.name); // 通知父组件
         },
         selectSubcategory(subcategory) {
             this.activeSubcategory = subcategory;
-            this.$router.push(`/category/${this.activeCategory.name}/${subcategory}`); // ✅ 更新 URL
-            this.onSubcategoryChange(subcategory); // ✅ 通知父组件
+            this.$router.push(`/category/${this.activeCategory.name}/${subcategory}`); // 更新 URL
+            this.onSubcategoryChange(subcategory); // 通知父组件
     },
     goHome() {
       this.activeCategory = null;
@@ -113,15 +113,14 @@ export default {
         this.calculateShoppingListPosition(); // 计算并设置悬浮框的位置
       }
     },
-    // 计算悬浮框的位置（紧挨按钮左侧）
+  
     calculateShoppingListPosition() {
-      const button = this.$refs.shoppingListButton; // 获取按钮 DOM 元素
-      const rect = button.getBoundingClientRect(); // 获取按钮的位置信息
+      const button = this.$refs.shoppingListButton; 
+      const rect = button.getBoundingClientRect(); 
 
-      // 设置悬浮框的位置，放置在按钮的左边
       this.shoppingListPosition = {
-        top: `${rect.top + window.scrollY + button.offsetHeight + 10}px`, // 设置悬浮框顶部
-        left: `${rect.left + window.scrollX - 210}px`, // 设置悬浮框左侧，确保悬浮框紧挨按钮左侧，宽度可以调整
+        top: `${rect.top + window.scrollY + button.offsetHeight + 10}px`,
+        left: `${rect.left + window.scrollX - 210}px`, 
       };
     },
   },
@@ -130,8 +129,8 @@ export default {
 
 <style>
 .shopping-list-button {
-  background-color: #0c1b25; /* 鲜明的蓝色背景 */
-  color: white; /* 白色文字 */
+  background-color: #0c1b25; 
+  color: white;
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
@@ -145,7 +144,7 @@ export default {
   border: 1px solid #ccc;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  width: 500px; /* 控制悬浮框的宽度 */
+  width: 500px; 
   cursor: pointer;
 }
 

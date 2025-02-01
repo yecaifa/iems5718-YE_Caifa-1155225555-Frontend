@@ -110,7 +110,7 @@
   <style scoped>
   .product-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 自适应列数 */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
   gap: 20px;
   padding: 0;
   margin: 0 auto;

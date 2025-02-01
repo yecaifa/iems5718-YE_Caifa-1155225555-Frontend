@@ -4,11 +4,11 @@
         <h3>Shopping List (Total: ${{ total }})</h3>
         <div v-for="(item, index) in cart" :key="index" class="shopping-item">
           <div class="item-details">
-            <!-- 商品名称左对齐 -->
+            
             <span class="item-name">{{ item.name }}</span>
-            <!-- 数量输入框左对齐 -->
+            
             <span class="item-quantity">[{{ item.quantity }}]</span>
-            <!-- 价格右对齐 -->
+            
             <span class="item-price">@{{ item.price * item.quantity }}</span>
           </div>
         </div>
@@ -59,24 +59,24 @@
   
   .item-details {
     display: flex;
-    justify-content: flex-start; /* 左对齐 */
+    justify-content: flex-start; 
     width: 100%;
-    align-items: center; /* 垂直居中 */
+    align-items: center; 
   }
   
   .item-name {
-    flex: 3; /* 商品名称占用较多的空间 */
+    flex: 3; 
     text-align: left;
   }
   
   .item-quantity {
     flex: 1;
-    text-align: center; /* 数量居中 */
+    text-align: center; 
   }
   
   .item-price {
     flex: 1;
-    text-align: right; /* 价格右对齐 */
+    text-align: right; 
   }
   
   .checkout-btn {

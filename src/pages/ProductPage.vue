@@ -1,11 +1,9 @@
 <template>
     <main v-if="product">
         <div class="product-container">
-            <!-- 图片部分，独占一行 -->
             <div class="product-image">
                 <img :src="product.image" :alt="product.name" />
             </div>
-            <!-- 产品信息部分 -->
             <div class="product-info">
                 <h1>{{ product.name }}</h1>
                 <p class="description">{{ product.description }}</p>
