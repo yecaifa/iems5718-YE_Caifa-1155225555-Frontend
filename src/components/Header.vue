@@ -2,104 +2,169 @@
   <header class="header">
     <div class="header-top">
       <h1 @click="goHome" class="home-link">Home</h1>
-      
+      <el-button ref="shoppingListButton" type="link" class="custom-button" @mouseover="showShoppingList = true">
+        Shopping List ${{ total }}
+      </el-button>
+      <h1 @click="goAdminPage" class="admin-link">Admin Panel</h1>
     </div>
-    <div class="user-actions">
-      <el-button
-        ref="shoppingListButton"  
-        type="text"
-        class="custom-button"
-        @mouseover="showShoppingList = true"
-      >
-        Shopping List   ${{ total }}
+    <div v-if="showShoppingList" class="shopping-list-hover" :style="shoppingListPosition"
+      @mouseover="showShoppingList = true" @mouseleave="showShoppingList = false">
+      <h3>Shopping List (Total: ${{ total }})</h3>
+
+      <table class="shopping-table">
+        <thead>
+          <tr>
+            <th class="name-col">Product</th>
+            <th class="qty-col">Qty</th>
+            <th class="price-col">Price</th>
+            <th class="action-col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in cart" :key="index">
+            <td class="name-col">{{ item.name }}</td>
+            <td class="qty-col">
+              <input type="number" v-model.number="item.quantity" min="1" class="quantity-input" />
+            </td>
+            <td class="price-col">${{ item.price * item.quantity }}</td>
+            <td class="action-col">
+              <button @click="removeFromCart(index)" class="delete-btn">✖</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="checkout">
+        <button @click="checkout" class="checkout-btn">Checkout</button>
+      </div>
+    </div>
+
+    <!-- <div class="user-actions">
+      <el-button ref="shoppingListButton" type="link" class="custom-button" @mouseover="showShoppingList = true">
+        Shopping List ${{ total }}
       </el-button>
 
-      <div
-        v-if="showShoppingList"
-        class="shopping-list-hover"
-        :style="shoppingListPosition"
-        @mouseover="showShoppingList = true"
-        @mouseleave="showShoppingList = false"
-      >
+      <div v-if="showShoppingList" class="shopping-list-hover" :style="shoppingListPosition"
+        @mouseover="showShoppingList = true" @mouseleave="showShoppingList = false">
         <h3>Shopping List (Total: ${{ total }})</h3>
-        <div v-for="(item, index) in cart" :key="index" class="shopping-item">
-          <span>{{ item.name }} ({{ item.quantity }})</span>
-          <input type="number" v-model.number="item.quantity" min="1" class="quantity-input" />
-          <span>@{{ item.price * item.quantity }}</span>
-        </div>
+
+        <table class="shopping-table">
+          <thead>
+            <tr>
+              <th class="name-col">Product</th>
+              <th class="qty-col">Qty</th>
+              <th class="price-col">Price</th>
+              <th class="action-col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, index) in cart" :key="index">
+              <td class="name-col">{{ item.name }}</td>
+              <td class="qty-col">
+                <input type="number" v-model.number="item.quantity" min="1" class="quantity-input" />
+              </td>
+              <td class="price-col">@{{ item.price * item.quantity }}</td>
+              <td class="action-col">
+                <button @click="removeFromCart(index)" class="delete-btn">✖</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
         <div class="checkout">
           <button @click="checkout" class="checkout-btn">Checkout</button>
         </div>
       </div>
-    </div>
+    </div> -->
+
     <!-- 分类菜单 -->
     <div class="header-categories">
       <el-menu mode="horizontal" :default-active="activeCategory">
-        <el-menu-item
-          v-for="category in categories"
-          :key="category.name"
-          @click="selectCategory(category)"
-        >
+        <el-menu-item v-for="category in categories" :key="category.catid" :index="String(category.catid)"
+          @click="selectCategory(category)">
           {{ category.name }}
         </el-menu-item>
       </el-menu>
     </div>
-  
-      <!-- 子类菜单 -->
-      <div class="header-subcategories" v-if="activeCategory">
-        <el-menu mode="horizontal" :default-active="activeSubcategory">
-          <el-menu-item
-            v-for="subcategory in activeCategory.subcategories"
-            :key="subcategory"
-            @click="selectSubcategory(subcategory)"
-          >
-            {{ subcategory }}
-          </el-menu-item>
-        </el-menu>
-      </div>
+
+    <!-- 子类菜单 -->
+    <div class="header-subcategories" v-if="activeCategory">
+      <el-menu mode="horizontal" :default-active="activeSubcategory">
+        <el-menu-item v-for="subcategory in subcategories" :key="subcategory.subcatid" :index="subcategory.subcatid"
+          @click="selectSubcategory(subcategory)">
+          {{ subcategory.name }}
+        </el-menu-item>
+      </el-menu>
+    </div>
   </header>
 </template>
 
 <script>
+import axios from "axios";
+import api from "@/api";
+
 export default {
   props: {
-      onCategoryChange: Function,
-      onSubcategoryChange: Function,
-      onHomeClick: Function,
+    onCategoryChange: Function,
+    onSubcategoryChange: Function,
+    onHomeClick: Function,
   },
   computed: {
     cart() {
-      return this.$store.state.cart; // 从 Vuex 获取购物车数据
+      return this.$store.state.cart;
     },
     total() {
-      return this.$store.getters.cartTotal; // 从 Vuex 获取购物车总价
-    }
+      return this.$store.getters.cartTotal;
+    },
   },
   data() {
     return {
       searchQuery: "",
       activeCategory: null,
-      activeSubcategory: "",
-      categories: [
-        { name: "Electronics", subcategories: ["Phones", "Laptops", "Cameras"] },
-        { name: "Clothes", subcategories: ["Men", "Women", "Kids"] },
-        { name: "Groceries", subcategories: ["Fruits", "Vegetables", "Snacks"] },
-      ],
-      showShoppingList: false, // 控制悬浮框的显示与隐藏
-      shoppingListPosition: { top: "30px", left: "0px" }, // 悬浮框的位置
+      activeSubcategory: null,
+      categories: [],
+      subcategories: [],
+      showShoppingList: false,
+      shoppingListPosition: { top: "30px", left: "0px" },
     };
   },
+  mounted() {
+    this.loadCategories();
+    const storedCart = JSON.parse(localStorage.getItem("shoppingCart"));
+    if (storedCart) {
+      this.$store.state.cart = storedCart;
+    }
+  },
   methods: {
+    async loadCategories() {
+      try {
+        this.categories = await api.fetchCategories();
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+      }
+    },
+
+    async loadSubcategories(categoryId) {
+      try {
+        this.subcategories = await api.fetchSubcategories(categoryId);
+      } catch (error) {
+        console.error("Failed to load subcategories:", error);
+      }
+    },
+    goAdminPage() {
+      this.$router.push("/admin");
+    },
     selectCategory(category) {
-      this.activeCategory = category;
+      this.activeCategory = category.catid;
       this.activeSubcategory = "";
-            this.$router.push(`/category/${category.name}`); // 更新 URL
-            this.onCategoryChange(category.name); // 通知父组件
-        },
-        selectSubcategory(subcategory) {
-            this.activeSubcategory = subcategory;
-            this.$router.push(`/category/${this.activeCategory.name}/${subcategory}`); // 更新 URL
-            this.onSubcategoryChange(subcategory); // 通知父组件
+      this.loadSubcategories(category.catid);
+      this.$router.push(`/category/${category.catid}`);
+      this.onCategoryChange(category.catid);
+    },
+    selectSubcategory(subcategory) {
+      this.activeSubcategory = subcategory.subcatid;
+      this.$router.push(`/category/${this.activeCategory}/${subcategory.subcatid}`);
+      this.onSubcategoryChange(subcategory.subcatid);
     },
     goHome() {
       this.activeCategory = null;
@@ -107,36 +172,36 @@ export default {
       this.$router.push("/");
       this.onHomeClick();
     },
+    removeFromCart(index) {
+      console.log(index);
+      this.$store.commit("REMOVE_FROM_CART", index);
+    },
     toggleCartVisibility() {
-      this.showShoppingList = !this.showShoppingList; // 切换购物清单显示
+      this.showShoppingList = !this.showShoppingList;
       if (this.showShoppingList) {
-        this.calculateShoppingListPosition(); // 计算并设置悬浮框的位置
+        this.calculateShoppingListPosition();
       }
     },
-  
     calculateShoppingListPosition() {
-      const button = this.$refs.shoppingListButton; 
-      const rect = button.getBoundingClientRect(); 
+      const button = this.$refs.shoppingListButton;
+      if (!button) return;
+
+      const rect = button.getBoundingClientRect();
 
       this.shoppingListPosition = {
-        top: `${rect.top + window.scrollY + button.offsetHeight + 10}px`,
-        left: `${rect.left + window.scrollX - 210}px`, 
+        top: `${rect.top + window.scrollY + button.offsetHeight + 5}px`, // 距离按钮底部5px
+        left: `${rect.left + window.scrollX}px`, // 水平对齐按钮左侧
       };
+    },
+    checkout() {
+      alert("Proceeding to checkout...");
     },
   },
 };
 </script>
 
 <style>
-.shopping-list-button {
-  background-color: #0c1b25; 
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
+/* 悬浮购物车样式 */
 .shopping-list-hover {
   position: absolute;
   padding: 10px;
@@ -144,12 +209,76 @@ export default {
   border: 1px solid #ccc;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  width: 500px; 
+  width: 400px;
   cursor: pointer;
 }
 
-.search-bar {
-  max-width: 400px;
+/* 购物车表格 */
+.shopping-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.shopping-table th,
+.shopping-table td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.shopping-table th {
+  text-align: left;
+  font-weight: bold;
+}
+
+.name-col {
   width: 50%;
+  text-align: left;
+}
+
+.qty-col,
+.price-col,
+.action-col {
+  width: 15%;
+  text-align: right;
+}
+
+/* 输入框 */
+.quantity-input {
+  width: 40px;
+  text-align: center;
+}
+
+/* 删除按钮 */
+.delete-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.delete-btn:hover {
+  background-color: darkred;
+}
+
+/* 结账按钮 */
+.checkout {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.checkout-btn {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.checkout-btn:hover {
+  background-color: #388e3c;
 }
 </style>

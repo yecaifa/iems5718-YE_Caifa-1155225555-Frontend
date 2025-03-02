@@ -1,12 +1,13 @@
 <template>
   <div class="app-container">
     <Header
+      v-if="$route.path !== '/admin'"
       :onCategoryChange="updateCategory"
       :onSubcategoryChange="updateSubcategory"
       :onHomeClick="resetToHome"
     />
     <MainContent
-      v-if="$route.path === '/' || $route.path.startsWith('/category')"
+      v-if="$route.path !== '/admin' && ($route.path === '/' || $route.path.startsWith('/category'))"
       :activeCategory="activeCategory"
       :activeSubcategory="activeSubcategory"
     />
@@ -27,9 +28,12 @@ export default {
   },
   data() {
     return {
-      activeCategory: null, // Null means "All Products"
+      activeCategory: "", // Null means "All Products"
       activeSubcategory: "",
     };
+  },
+  created() {
+    this.$store.dispatch("fetchUpdatedProducts");
   },
   methods: {
     updateCategory(category) {
