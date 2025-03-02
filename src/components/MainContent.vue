@@ -88,7 +88,7 @@ export default {
 
 .product-card {
   max-width: 300px;
-  border: 1px solid #85C1E9;
+  border: 1px solid #0b0b0b;
   border-radius: 5px;
   padding: 10px;
   text-align: center;
@@ -100,7 +100,7 @@ export default {
 .product-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  border-color: #3498DB;
+  border-color: #000000;
 }
 
 .product-card img {
@@ -111,18 +111,18 @@ export default {
 }
 
 .product-card h3 {
-  color: #3498DB;
+  color: #000000;
   margin: 10px 0;
 }
 
 .product-card p {
-  color: #5DADE2;
+  color: #bea13a;
   font-size: 1.2em;
   font-weight: bold;
 }
 
 .el-button {
-  background-color: #3498DB;
+  background-color: #602095;
   color: white;
   border: none;
 }

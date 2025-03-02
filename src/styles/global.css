@@ -5,7 +5,7 @@
     position: sticky;
     top: 0;
     z-index: 1000;
-    background-color: #5DADE2; 
+    background-color: #622279; 
     color: white;
     padding: 10px 20px;
   }
@@ -27,7 +27,7 @@
   }
   
   .header-categories {
-    background-color: #85C1E9; 
+    background-color: #772dac; 
     color: white;
   }
   
@@ -55,7 +55,7 @@
   
   /* 按钮样式 */
   .custom-button {
-    background-color: #5DADE2; 
+    background-color: #b6a63b; 
     color: white;
     border: none;
     border-radius: 4px;
@@ -65,15 +65,15 @@
   }
   
   .custom-button:hover {
-    background-color: #3498DB; 
+    background-color: #7a34a9; 
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   }
   
   .custom-button:active {
-    background-color: #21618C; 
+    background-color: #be9440; 
   }
   
   .custom-button:focus {
     outline: none;
-    box-shadow: 0px 0px 8px #5DADE2; 
+    box-shadow: 0px 0px 8px #46165e; 
   }
