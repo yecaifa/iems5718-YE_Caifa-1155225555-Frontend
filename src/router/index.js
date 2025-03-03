@@ -4,6 +4,8 @@ import CategoryPage from "../pages/CategoryPage.vue";
 import ProductPage from "../pages/ProductPage.vue";
 import AdminPanel from "../pages/AdminPanel.vue";  // 导入 AdminPanel
 
+const BASE_PATH = "/iems5718-YE_Caifa-1155225555-Frontend";
+
 const routes = [
   { path: "/", component: HomePage, meta: { title: "Home - MyShop" } },
   { 

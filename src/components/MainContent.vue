@@ -3,12 +3,17 @@
     <ul class="product-list">
       <li v-for="product in filteredProducts" :key="product.pid" class="product-card">
         <router-link :to="`/product/${product.pid}`">
-          <img :src="product.imageUrl" :alt="product.name" />
-          <h3>{{ product.name }}</h3>
+          <div class="product-image-container">
+            <img :src="product.imageUrl" :alt="product.name" class="product-image"/>
+          </div>
+          <h3 class="product-name">{{ product.name }}</h3>
         </router-link>
-        <p>{{ product.description }}</p>
-        <p>${{ product.price }}</p>
-        <el-button type="primary" @click="addToCart(product)">Add to Cart</el-button>
+        <p class="product-description">{{ product.description }}</p>
+
+        <div class="product-bottom">
+          <p class="product-price">${{ product.price }}</p>
+          <el-button type="primary" @click="addToCart(product)">Add to Cart</el-button>
+        </div>
       </li>
     </ul>
   </main>
@@ -78,12 +83,11 @@ export default {
 
 <style scoped>
 .product-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  padding: 0;
-  margin: 0 auto;
   list-style: none;
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 10px;
 }
 
 .product-card {
@@ -103,26 +107,51 @@ export default {
   border-color: #000000;
 }
 
-.product-card img {
+/* 图片容器，固定高度 */
+.product-image-container {
   width: 100%;
-  height: auto;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 10px;
+  height: 200px;  /* 固定图片区域高度 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-.product-card h3 {
+.product-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* 确保图片完整显示 */
+}
+
+/* 产品名称 */
+.product-name {
   color: #000000;
   margin: 10px 0;
 }
 
-.product-card p {
-  color: #bea13a;
+/* 产品描述 */
+.product-description {
+  color: black;
+  font-size: 1em;
+  font-weight: normal;
+  flex-grow: 1; /* 让 description 自适应撑开 card */
+}
+/* 产品底部部分 (price & add to cart) */
+.product-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: auto; /* 让底部固定在最底部 */
+}
+
+.product-price {
+  color: red;
   font-size: 1.2em;
   font-weight: bold;
 }
 
 .el-button {
-  background-color: #602095;
+  background-color: #3e7f34;
   color: white;
   border: none;
 }
@@ -130,8 +159,9 @@ export default {
 .el-button:hover {
   background-color: #21618C;
 }
+
 .custom-notification {
-  min-width: 350px;  
+  min-width: 350px;
   max-width: 800px;
 }
 </style>

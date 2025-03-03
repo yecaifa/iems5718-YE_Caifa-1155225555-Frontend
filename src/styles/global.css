@@ -2,78 +2,83 @@
 
 /* Header 样式 */
 .header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background-color: #622279; 
-    color: white;
-    padding: 10px 20px;
-  }
-  
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .search-bar {
-    flex: 1;
-    margin: 0 20px;
-  }
-  
-  .user-actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .header-categories {
-    background-color: #772dac; 
-    color: white;
-  }
-  
-  .header-categories .el-menu-item:hover {
-    background-color: #3498DB; 
-  }
-  
-  .header-subcategories {
-    background-color: #85C1E9; 
-    color: white;
-  }
-  
-  .header-subcategories .el-menu-item:hover {
-    background-color: #3498DB; 
-  }
-  
-  .home-link {
-    cursor: pointer;
-    color: white;
-  }
-  
-  .home-link:hover {
-    text-decoration: underline;
-  }
-  
-  /* 按钮样式 */
-  .custom-button {
-    background-color: #b6a63b; 
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 6px 12px;
-    font-size: 14px;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  .custom-button:hover {
-    background-color: #7a34a9; 
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  .custom-button:active {
-    background-color: #be9440; 
-  }
-  
-  .custom-button:focus {
-    outline: none;
-    box-shadow: 0px 0px 8px #46165e; 
-  }
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: #8e8e8e;
+  color: white;
+  padding: 10px 20px;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.search-bar {
+  flex: 1;
+  margin: 0 20px;
+}
+
+.header-categories {
+  background-color: #772dac;
+  color: white;
+}
+
+.header-categories .el-menu-item:hover {
+  background-color: #3498DB;
+}
+
+.header-subcategories {
+  background-color: #85C1E9;
+  color: white;
+}
+
+.header-subcategories .el-menu-item:hover {
+  background-color: #3498DB;
+}
+
+.home-link {
+  cursor: pointer;
+  color: white;
+  margin-right: auto; /* 确保 Home 靠左 */
+}
+
+.home-link:hover {
+  text-decoration: underline;
+}
+
+/* 按钮样式 */
+.custom-button {
+  background-color: #b6a63b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.custom-button:hover {
+  background-color: #7a34a9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.custom-button:active {
+  background-color: #be9440;
+}
+
+.custom-button:focus {
+  outline: none;
+  box-shadow: 0px 0px 8px #46165e;
+}
+.icon-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}

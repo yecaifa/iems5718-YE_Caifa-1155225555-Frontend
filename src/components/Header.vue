@@ -2,80 +2,59 @@
   <header class="header">
     <div class="header-top">
       <h1 @click="goHome" class="home-link">Home</h1>
-      <el-button ref="shoppingListButton" type="link" class="custom-button" @mouseover="showShoppingList = true">
-        Shopping List ${{ total }}
-      </el-button>
-      <h1 @click="goAdminPage" class="admin-link">Admin Panel</h1>
-    </div>
-    <div v-if="showShoppingList" class="shopping-list-hover" :style="shoppingListPosition"
-      @mouseover="showShoppingList = true" @mouseleave="showShoppingList = false">
-      <h3>Shopping List (Total: ${{ total }})</h3>
+      <div class="user-actions">
+        <!-- Admin Panel 图标 -->
+        <el-tooltip content="Admin Panel" placement="right">
+          <el-button class="icon-button" @click="goAdminPage">
+            <el-icon>
+              <Setting />
+            </el-icon>
+          </el-button>
+        </el-tooltip>
 
-      <table class="shopping-table">
-        <thead>
-          <tr>
-            <th class="name-col">Product</th>
-            <th class="qty-col">Qty</th>
-            <th class="price-col">Price</th>
-            <th class="action-col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in cart" :key="index">
-            <td class="name-col">{{ item.name }}</td>
-            <td class="qty-col">
-              <input type="number" v-model.number="item.quantity" min="1" class="quantity-input" />
-            </td>
-            <td class="price-col">${{ item.price * item.quantity }}</td>
-            <td class="action-col">
-              <button @click="removeFromCart(index)" class="delete-btn">✖</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="checkout">
-        <button @click="checkout" class="checkout-btn">Checkout</button>
       </div>
-    </div>
+      <div class="shopping-container">
+        <el-button ref="shoppingListButton" class="cart-button" @click="toggleShoppingList"
+          @mouseover="showShoppingList = true">
+          <el-icon>
+            <ShoppingCart />
+          </el-icon>
+          <span class="cart-total">${{ total }}</span>
+        </el-button>
 
-    <!-- <div class="user-actions">
-      <el-button ref="shoppingListButton" type="link" class="custom-button" @mouseover="showShoppingList = true">
-        Shopping List ${{ total }}
-      </el-button>
+        <!-- 购物车列表：相对购物车按钮展开 -->
+        <div v-if="showShoppingList" class="shopping-list-hover" @mouseover="showShoppingList = true"
+          @mouseleave="showShoppingList = false">
+          <h3>Shopping List (Total: ${{ total }})</h3>
+          <table class="shopping-table">
+            <thead>
+              <tr>
+                <th class="name-col">Product</th>
+                <th class="qty-col">Qty</th>
+                <th class="price-col">Price</th>
+                <th class="action-col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in cart" :key="index">
+                <td class="name-col">{{ item.name }}</td>
+                <td class="qty-col">
+                  <input type="number" v-model.number="item.quantity" min="1" class="quantity-input" />
+                </td>
+                <td class="price-col">${{ item.price * item.quantity }}</td>
+                <td class="action-col">
+                  <button @click="removeFromCart(index)" class="delete-btn">✖</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="checkout">
+            <button @click="checkout" class="checkout-btn">Checkout</button>
 
-      <div v-if="showShoppingList" class="shopping-list-hover" :style="shoppingListPosition"
-        @mouseover="showShoppingList = true" @mouseleave="showShoppingList = false">
-        <h3>Shopping List (Total: ${{ total }})</h3>
-
-        <table class="shopping-table">
-          <thead>
-            <tr>
-              <th class="name-col">Product</th>
-              <th class="qty-col">Qty</th>
-              <th class="price-col">Price</th>
-              <th class="action-col"></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in cart" :key="index">
-              <td class="name-col">{{ item.name }}</td>
-              <td class="qty-col">
-                <input type="number" v-model.number="item.quantity" min="1" class="quantity-input" />
-              </td>
-              <td class="price-col">@{{ item.price * item.quantity }}</td>
-              <td class="action-col">
-                <button @click="removeFromCart(index)" class="delete-btn">✖</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div class="checkout">
-          <button @click="checkout" class="checkout-btn">Checkout</button>
+          </div>
         </div>
       </div>
-    </div> -->
+    </div>
 
     <!-- 分类菜单 -->
     <div class="header-categories">
@@ -102,6 +81,7 @@
 <script>
 import axios from "axios";
 import api from "@/api";
+import { ShoppingCart, Setting } from '@element-plus/icons-vue';
 
 export default {
   props: {
@@ -193,6 +173,9 @@ export default {
         left: `${rect.left + window.scrollX}px`, // 水平对齐按钮左侧
       };
     },
+    toggleShoppingList() {
+      this.showShoppingList = !this.showShoppingList;
+    },
     checkout() {
       alert("Proceeding to checkout...");
     },
@@ -201,16 +184,24 @@ export default {
 </script>
 
 <style>
+.user-actions{
+  display: flex;
+  gap: 10px;
+  margin: 10px;
+}
 /* 悬浮购物车样式 */
 .shopping-list-hover {
   position: absolute;
   padding: 10px;
-  background-color: #06647a;
+  background-color: rgb(71, 65, 65);
   border: 1px solid #ccc;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   width: 400px;
   cursor: pointer;
+  right: 0;
+  border-radius: 8px;
+
 }
 
 /* 购物车表格 */
@@ -266,7 +257,8 @@ export default {
 /* 结账按钮 */
 .checkout {
   margin-top: 10px;
-  text-align: center;
+  margin-left: 100px;
+  text-align: right;
 }
 
 .checkout-btn {
