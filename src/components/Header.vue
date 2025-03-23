@@ -2,20 +2,42 @@
   <header class="header">
     <div class="header-top">
       <h1 @click="goHome" class="home-link">Home</h1>
+      <!-- 用户身份按钮 -->
+      <div class="user-dropdown">
+        <el-dropdown trigger="click">
+          <el-button class="user-button">
+            <el-icon>
+              <User />
+            </el-icon>
+            {{ userInfo }}
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-if="userInfo === 'Guest'" @click="goLogin">Login</el-dropdown-item>
+              <template v-else>
+                <el-dropdown-item @click="goChangePassword">Change Password</el-dropdown-item>
+                <el-dropdown-item @click="logout">Logout</el-dropdown-item>
+              </template>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
       <div class="user-actions">
         <!-- Admin Panel 图标 -->
-        <el-tooltip content="Admin Panel" placement="right">
+
+        <el-tooltip content="Admin Panel" placement="bottom">
           <el-button class="icon-button" @click="goAdminPage">
             <el-icon>
               <Setting />
             </el-icon>
+            <span> Admin Panel</span>
           </el-button>
         </el-tooltip>
 
       </div>
       <div class="shopping-container">
         <el-button ref="shoppingListButton" class="cart-button" @click="toggleShoppingList"
-          @mouseover="showShoppingList = true">
+          @mouseover="toggleShoppingList(true)" @mouseleave="leaveList(false)">
           <el-icon>
             <ShoppingCart />
           </el-icon>
@@ -23,20 +45,24 @@
         </el-button>
 
         <!-- 购物车列表：相对购物车按钮展开 -->
-        <div v-if="showShoppingList" class="shopping-list-hover" @mouseover="showShoppingList = true"
-          @mouseleave="showShoppingList = false">
-          <h3>Shopping List (Total: ${{ total }})</h3>
+        <div v-if="showShoppingList" class="shopping-list-hover" @mouseover="isMouseOverCart = true"
+          @mouseleave="leaveList(false)">
+          <h3>Total: ${{ total }}</h3>
           <table class="shopping-table">
             <thead>
               <tr>
-                <th class="name-col">Product</th>
-                <th class="qty-col">Qty</th>
-                <th class="price-col">Price</th>
+                <th class="img-col"></th>
+                <th class="name-col"></th>
+                <th class="qty-col"></th>
+                <th class="price-col"></th>
                 <th class="action-col"></th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in cart" :key="index">
+                <td class="img-col">
+                  <img :src="item.imageUrl" alt="Product Image" class="cart-item-img" />
+                </td>
                 <td class="name-col">{{ item.name }}</td>
                 <td class="qty-col">
                   <input type="number" v-model.number="item.quantity" min="1" class="quantity-input" />
@@ -82,7 +108,7 @@
 import axios from "axios";
 import api from "@/api";
 import { ShoppingCart, Setting } from '@element-plus/icons-vue';
-
+import { ElMessage } from "element-plus";
 export default {
   props: {
     onCategoryChange: Function,
@@ -96,6 +122,20 @@ export default {
     total() {
       return this.$store.getters.cartTotal;
     },
+    userInfo() {
+      const user = JSON.parse(localStorage.getItem("user")) || null;
+      if (user && user.username) {
+        return `${user.username} (${user.isAdmin ? 'Admin' : 'User'})`;
+      }
+      return "Guest";
+    },
+    role() {
+      const user = JSON.parse(localStorage.getItem("user")) || null;
+      if (user) {
+        return user.isAdmin ? 'Admin' : 'User';
+      }
+      return "Guest";
+    },
   },
   data() {
     return {
@@ -105,17 +145,42 @@ export default {
       categories: [],
       subcategories: [],
       showShoppingList: false,
+      isMouseOverCart: false,
       shoppingListPosition: { top: "30px", left: "0px" },
     };
   },
   mounted() {
     this.loadCategories();
+    // this.getUserRole();
     const storedCart = JSON.parse(localStorage.getItem("shoppingCart"));
     if (storedCart) {
       this.$store.state.cart = storedCart;
     }
   },
   methods: {
+    goChangePassword() {
+      this.$router.push("/change-password");
+    },
+    goLogin() {
+      this.$router.push("/login");
+    },
+    logout() {
+      localStorage.removeItem("user");
+      ElMessage.success("Logged out successfully.");
+      this.$router.push("/");
+      setTimeout(() => {
+        window.location.reload();  // 刷新页面
+      }, 100);
+    },
+    goAdminPage() {
+      if (this.role === "Admin") {
+        console.log(this.role)
+        this.$router.push("/admin");
+      } else {
+        console.log(this.role)
+        ElMessage.error("You do not have permission to access Admin Panel!");
+      }
+    },
     async loadCategories() {
       try {
         this.categories = await api.fetchCategories();
@@ -130,9 +195,6 @@ export default {
       } catch (error) {
         console.error("Failed to load subcategories:", error);
       }
-    },
-    goAdminPage() {
-      this.$router.push("/admin");
     },
     selectCategory(category) {
       this.activeCategory = category.catid;
@@ -173,8 +235,18 @@ export default {
         left: `${rect.left + window.scrollX}px`, // 水平对齐按钮左侧
       };
     },
-    toggleShoppingList() {
-      this.showShoppingList = !this.showShoppingList;
+    leaveList(isHovering) { this.isMouseOverCart = false, this.toggleShoppingList(isHovering) },
+    toggleShoppingList(isHovering) {
+      if (isHovering) {
+        this.showShoppingList = true;
+        this.isMouseOverCart = true;
+      } else {
+        setTimeout(() => {
+          if (!this.isMouseOverCart) {
+            this.showShoppingList = false;
+          }
+        }, 100); // 添加一个短暂的延迟，防止误触
+      }
     },
     checkout() {
       alert("Proceeding to checkout...");
@@ -184,11 +256,12 @@ export default {
 </script>
 
 <style>
-.user-actions{
+.user-actions {
   display: flex;
   gap: 10px;
   margin: 10px;
 }
+
 /* 悬浮购物车样式 */
 .shopping-list-hover {
   position: absolute;
@@ -272,5 +345,16 @@ export default {
 
 .checkout-btn:hover {
   background-color: #388e3c;
+}
+
+.img-col {
+  width: 60px;
+}
+
+.img-col img.cart-item-img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 5px;
 }
 </style>

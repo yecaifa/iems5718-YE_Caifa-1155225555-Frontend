@@ -1,9 +1,87 @@
 import axios from "axios";
-
 // 统一 API 根路径，使用环境变量
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://20.255.253.135:8080";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://yecaifa.eastasia.cloudapp.azure.com";
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
+axios.defaults.withCredentials = true; // ✅ 允许跨域请求携带 Cookies
+
+// ✅ 发送 CSRF Token
+axios.interceptors.request.use((config) => {
+  const csrfToken = getCookie("XSRF-TOKEN"); // 获取 CSRF Token
+  if (csrfToken) {
+    config.headers["X-CSRF-TOKEN"] = csrfToken;
+  }
+  return config;
+});
+
+// ✅ 获取 Cookie 方法
+function getCookie(name) {
+  let matches = document.cookie.match(new RegExp(
+    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
 const api = {
+  async changePassword(oldPassword, newPassword) {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/auth/change-password`,
+        { oldPassword, newPassword }, // 请求体
+        { withCredentials: true } // ✅ 携带 Cookie
+      );
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Change password error:", error);
+      throw new Error("Failed to change password. Please try again.");
+    }
+  },
+  async login(email, password) {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/auth/login`,
+        { email, password },
+        { withCredentials: true } // ✅ 确保请求携带 Cookie
+      );
+
+      if (response.data.success) {
+        console.log(response.data);
+        localStorage.setItem("user", JSON.stringify({
+          username: response.data.user.email,
+          isAdmin: response.data.user.is_admin
+        }));
+        // localStorage.setItem("userRole", response.data.user.is_admin ? "Admin" : "User");
+        // localStorage.setItem("userName", response.data.user.email); // 存储 userId
+        // console.log(localStorage.getItem("userRole"));
+        console.log(localStorage.getItem("user"));
+        // this.$router.push(response.data.user.is_admin ? "/admin" : "/");
+        return response.data;
+      } else {
+        throw new Error("Invalid email or password.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      throw new Error("Login failed. Please try again.");
+    }
+  },
+
+  async logout() {
+    try {
+      await axios.post(`${API_BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  },
+
+  async checkAuth() {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/auth/check-auth`, { withCredentials: true });
+      return response.data.user;
+    } catch (error) {
+      console.error("Check Auth error:", error);
+      return null;
+    }
+  },
   // 获取所有类别
   async fetchCategories() {
     try {
@@ -19,7 +97,7 @@ const api = {
   async fetchSubcategories(categoryId) {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/categories/${categoryId}/subcategories`);
-    //   console.log(response.data);
+      //   console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching subcategories:", error);
@@ -31,7 +109,7 @@ const api = {
   async fetchProducts() {
     try {
       const response = await axios.get(`${API_BASE_URL}/api/products`);
-    //   console.log(response.data);
+      //   console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -146,14 +224,13 @@ const api = {
     }
   },
 
-  // 上传产品图片 (示例，具体实现要配合后端)
-  async uploadProductImage(file) {
+  async uploadImage(formData) {
+    console.log("Uploading image with FormData:", formData.get("file")); // 调试日志
     try {
-      const formData = new FormData();
-      formData.append("file", file);
       const response = await axios.post(`${API_BASE_URL}/api/upload`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log("Upload response:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error uploading image:", error);

@@ -1,6 +1,7 @@
 <template>
   <footer class="footer">
     <p>© 2025 IEMS 5718. All Rights Reserved.</p>
+    <p>1155225555 YE Caifa</p>
   </footer>
 </template>
 

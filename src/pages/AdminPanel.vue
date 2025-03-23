@@ -11,7 +11,11 @@
 
       <!-- 添加 Category -->
       <div class="form-group">
-        <input v-model="newCategoryName" placeholder="Enter category name" />
+        <input 
+        class="input" 
+        v-model.trim="newCategoryName"
+        placeholder="Enter category name"
+        :pattern="patterns.textOnly" required />
         <button @click="addCategory">➕ Add Category</button>
       </div>
 
@@ -42,7 +46,10 @@
     <section v-if="selectedCategoryForSub" class="section-card">
       <h3>Manage Subcategories for {{ selectedCategoryForSub.name }}</h3>
       <div class="form-group">
-        <input v-model="newSubcategoryName" placeholder="Enter subcategory name" />
+        <input 
+        v-model.trim="newSubcategoryName" 
+        placeholder="Enter subcategory name" 
+        :pattern="patterns.textOnly" required />
         <button @click="addSubcategory">➕ Add Subcategory</button>
       </div>
 
@@ -93,17 +100,19 @@
 
       <div class="form-group">
         <label>Name:</label>
-        <input v-model="newProduct.name" placeholder="Enter product name" />
+        <input v-model.trim="newProduct.name" placeholder="Enter product name" 
+        :pattern="patterns.textOnly" required />
       </div>
 
       <div class="form-group">
         <label>Price:</label>
-        <input v-model="newProduct.price" type="number" placeholder="Enter price" />
+        <input v-model.trim="newProduct.price" type="number" placeholder="Enter price" 
+        :pattern="patterns.price" required />
       </div>
 
       <div class="form-group">
         <label>Description:</label>
-        <textarea v-model="newProduct.description" placeholder="Enter description"></textarea>
+        <textarea v-model="newProduct.description" maxlength="200" placeholder="Enter description"></textarea>
       </div>
       <!-- 🔥 文件上传 -->
       <div class="form-group">
@@ -154,15 +163,16 @@
               </select>
             </td>
             <td>
-              <input v-model="product.price" type="number" placeholder="Enter price" @blur="updateProduct(product)" />
+              <input class="price-input" v-model="product.price" type="number" min="0.01"
+              step="0.01" placeholder="Enter price" @blur="updateProduct(product)" />
             </td>
             <td>
               <textarea v-model="product.description" placeholder="Enter description"
                 @blur="updateProduct(product)"></textarea>
             </td>
             <td>
-              <button @click="startEditingProduct(product)">✏️ Edit</button>
-              <button class="delete-btn" @click="deleteProduct(product.pid)">🗑️ Delete</button>
+              <!-- <button @click="startEditingProduct(product)">✏️ Edit</button> -->
+              <button class="delete-btn" @click="deleteProduct(product.pid)" >🗑️ Delete</button>
             </td>
           </tr>
         </tbody>
@@ -192,6 +202,10 @@ export default {
         price: "",
         description: "",
         imageFile: null,
+      },
+      patterns: {
+        textOnly: "^[a-zA-Z0-9 ]{3,50}$", // 只能输入字母、数字、空格，限制3-50字符
+        price: "^[0-9]+(\\.[0-9]{1,2})?$" // 只能输入整数或小数（最多两位小数）
       },
     };
   },
@@ -390,6 +404,7 @@ export default {
     // 处理文件上传
     handleFileUpload(event) {
       const file = event.target.files[0];
+      console.log("Selected file:", file);
       if (file) {
         if (!["image/jpeg", "image/png", "image/gif"].includes(file.type)) {
           alert("Only JPG, PNG, and GIF formats are allowed!");
@@ -400,6 +415,54 @@ export default {
           return;
         }
         this.newProduct.imageFile = file;
+      }
+    },
+    async addProduct() {
+      if (!this.newProduct.name || !this.newProduct.price || !this.newProduct.description || !this.newProduct.imageFile) {
+        alert("Please fill in all fields and select an image.");
+        return;
+      }
+
+      try {
+        // 1️⃣ **上传图片**
+        const formData = new FormData();
+        formData.append("file", this.newProduct.imageFile);
+        console.log("Uploading file:", this.newProduct.imageFile);  // 确保不为空
+        const uploadResponse = await api.uploadImage(formData); // 发送至后端
+        console.log("Upload Response:", uploadResponse);
+        if (!uploadResponse || !uploadResponse.imageUrl) {
+          alert("Image upload failed.");
+          return;
+        }
+
+        // 2️⃣ **创建产品**
+        const selectedCategory = this.categories.find(cat => cat.catid === this.selectedCategoryId);
+        const selectedSubcategory = this.subcategories.find(sub => sub.subcatid === this.selectedSubcategoryId);
+
+        const productData = {
+          subcategory: {
+            subcatid: this.selectedSubcategoryId,
+            category: {
+              catid: this.selectedCategoryId,
+              name: selectedCategory ? selectedCategory.name : "" // 添加 category name
+            },
+            name: selectedSubcategory ? selectedSubcategory.name : "", // 添加 subcategory name
+          },
+          name: this.newProduct.name,
+          price: this.newProduct.price,
+          description: this.newProduct.description,
+          imageUrl: uploadResponse.imageUrl, // 服务器返回的 URL
+        };
+
+        await api.addProduct(productData); // 发送至后端
+        alert("Product added successfully!");
+        this.newProduct = { name: "", price: "", description: "", imageFile: null };
+        this.selectedCategoryId = "";
+        this.selectedSubcategoryId = "";
+        this.loadProducts(); // 刷新产品列表
+      } catch (error) {
+        console.error("Failed to add product:", error);
+        alert("Failed to add product.");
       }
     },
     async fetchSubcategories() {
@@ -478,6 +541,8 @@ button:hover {
 
 .delete-btn {
   background: #dc3545;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .delete-btn:hover {
@@ -513,5 +578,29 @@ th {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.input {
+  width: 40%;
+  padding: 10px;
+  margin-right: 15px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.price-input {
+  width: 90%; /* 适当调整 */
+  text-align: right;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  resize: vertical; /* 允许调整高度 */
 }
 </style>
